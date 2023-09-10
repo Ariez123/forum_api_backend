@@ -35,7 +35,6 @@ describe('ThreadRepositoryPostgres', () => {
 
       const dataThread = await threadRepositoryPostgres.addThread(newThread);
 
-      // Assert
       const threads = await ThreadTableTestHelper.getThread('thread-321');
       expect(dataThread).toStrictEqual({
         id: 'thread-321',
@@ -95,7 +94,9 @@ describe('ThreadRepositoryPostgres', () => {
         owner: 'user-3',
       });
 
-      const dataThread = await threadRepositoryPostgres.getThread('thread-12345');
+      const dataThread = await threadRepositoryPostgres.getThread(
+        'thread-12345'
+      );
       expect(dataThread).toStrictEqual({
         id: 'thread-12345',
         title: 'Coba Thread',
