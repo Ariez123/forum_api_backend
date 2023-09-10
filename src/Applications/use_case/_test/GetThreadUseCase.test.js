@@ -93,7 +93,7 @@ describe('GetThreadUseCase', () => {
         id: 'comment-1',
         username: 'user-2',
         date: '2023-09-09T03:14:51.495Z',
-        content: '**komentar dihapus**',
+        content: '**komentar telah dihapus**',
         deleted: true,
       },
     ];
@@ -101,7 +101,7 @@ describe('GetThreadUseCase', () => {
     const dataReply = [
       {
         id: 'reply-1',
-        content: '**balasan komentar dihapus**',
+        content: '**balasan telah dihapus**',
         date: '2023-09-09T03:14:51.495Z',
         username: 'user-3',
         comment_id: 'comment-1',
