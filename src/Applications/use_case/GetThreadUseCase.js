@@ -12,12 +12,12 @@ class GetThreadUseCase {
         id,
         username,
         date,
-        content: deleted ? '**komentar telah dihapus**' : content,
+        content: deleted ? '**komentar dihapus**' : content,
         replies: reply
           .filter(({ comment_id }) => comment_id == id)
           .map(({ id, content, deleted, date, username }) => ({
             id,
-            content: deleted ? '**balasan telah dihapus**' : content,
+            content: deleted ? '**balasan komentar dihapus**' : content,
             date,
             username,
           })),

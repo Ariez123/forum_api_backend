@@ -22,7 +22,7 @@ class ThreadRepository {
   async verifyCommentOwner(commentId, owner) {
     throw new Error('THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED');
   }
-  async gatCommentThread(threadId) {
+  async getCommentThread(threadId) {
     throw new Error('THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED');
   }
 
@@ -38,6 +38,9 @@ class ThreadRepository {
   }
   async deleteReply(replyId) {
     throw new Error('REPLY_REPOSITORY.METHOD_NOT_IMPLEMENTED');
+  }
+  async getReply(threadId) {
+    throw new Error('THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED');
   }
 }
 
