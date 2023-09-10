@@ -2,10 +2,10 @@ const pool = require('../src/Infrastructures/database/postgres/pool');
 
 const threadTableTestHelper = {
   async addThread({
-    id = 'thread-123456',
+    id = 'thread-1',
     title = 'Coba Thread',
     body = 'Isi Thread',
-    owner = 'user-123',
+    owner = 'user-1',
     date = new Date('2023-09-09T03:14:51.495Z'),
   }) {
     await pool.query({
@@ -23,7 +23,11 @@ const threadTableTestHelper = {
   },
 
   async cleanTable() {
-    await pool.query('DELETE FROM thread WHERE 1=1');
+    await pool.query(
+      `DELETE FROM thread WHERE 1=1;
+      DELETE FROM comment WHERE 1=1;
+      DELETE FROM reply WHERE 1=1`
+    );
   },
 };
 
