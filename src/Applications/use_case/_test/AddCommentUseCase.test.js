@@ -35,7 +35,6 @@ describe('AddCommentUseCase', () => {
 
     const addComment = await addCommentUseCase.execute(dataPayload);
 
-    // Assert
     expect(addComment).toStrictEqual(dataComment);
     expect(mockThreadRepository.verifyThread).toBeCalledWith(
       dataPayload.threadId
