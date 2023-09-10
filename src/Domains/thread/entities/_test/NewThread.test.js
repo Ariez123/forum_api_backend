@@ -1,6 +1,6 @@
 const NewThread = require('../NewThread');
 
-describe('a NewThread entities', () => {
+describe('NewThread Entities', () => {
   it('should throw error property', () => {
     const dataPayload = {
       title: 'Coba Thread',

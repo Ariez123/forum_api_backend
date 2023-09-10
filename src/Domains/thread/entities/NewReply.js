@@ -17,7 +17,7 @@ class NewReply {
       typeof content !== 'string' ||
       typeof owner !== 'string'
     ) {
-      throw new Error('NEW_REPLY.PROPERTY_NOT_FOUND');
+      throw new Error('NEW_REPLY.INCCORECT_TYPE_DATA');
     }
   }
 }
