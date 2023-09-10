@@ -1,6 +1,7 @@
 const pool = require('../src/Infrastructures/database/postgres/pool');
 
 const threadTableTestHelper = {
+  // thread
   async addThread({
     id = 'thread-1',
     title = 'Coba Thread',
@@ -20,6 +21,64 @@ const threadTableTestHelper = {
       values: [id],
     });
     return rows;
+  },
+
+  // comment
+  async addComment({
+    id = 'comment-1',
+    threadId = 'thread-1',
+    owner = 'user-1',
+    content = 'Isi Komentar',
+    date = new Date('2023-09-09T03:14:51.495Z'),
+  }) {
+    await pool.query({
+      text: 'INSERT INTO comment VALUES($1, $2, $3, $4, $5)',
+      values: [id, threadId, owner, content, date],
+    });
+  },
+
+  async getComment(id) {
+    const { rows } = await pool.query({
+      text: 'SELECT * FROM comment WHERE id = $1',
+      values: [id],
+    });
+
+    return rows;
+  },
+
+  // reply
+  async addReply({
+    id = 'reply-1',
+    commentId = 'comment-1',
+    owner = 'user-1',
+    content = 'Isi Balasan Komentar',
+    date = new Date('2023-09-09T03:14:51.495Z'),
+  }) {
+    const query = {
+      text: 'INSERT INTO reply VALUES($1, $2, $3, $4, $5)',
+      values: [id, commentId, owner, content, date],
+    };
+
+    await pool.query(query);
+  },
+
+  async getReply(id) {
+    const query = {
+      text: 'SELECT * FROM reply WHERE id = $1',
+      values: [id],
+    };
+
+    const result = await pool.query(query);
+
+    return result.rows;
+  },
+
+  async deleteReply(id) {
+    const query = {
+      text: 'UPDATE reply SET deleted = TRUE WHERE id=$1',
+      values: [id],
+    };
+    await pool.query(query);
   },
 
   async cleanTable() {
