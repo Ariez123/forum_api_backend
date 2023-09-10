@@ -13,8 +13,8 @@ class AddReplyUseCase {
       dataPayload.commentId,
       dataPayload.threadId
     );
-    const addedReply = await this._threadRepository.addReply(newReply);
-    return new AddReply(addedReply);
+    const dataResult = await this._threadRepository.addReply(newReply);
+    return new AddReply(dataResult);
   }
 }
 

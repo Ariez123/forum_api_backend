@@ -7,8 +7,7 @@ class AddThread {
     this.owner = owner;
   }
 
-  _verifyPayload(payload) {
-    const { id, title, owner } = payload;
+  _verifyPayload({ id, title, owner }) {
     if (!id || !title || !owner) {
       throw new Error('ADD_THREAD.PROPERTY_NOT_FOUND');
     }

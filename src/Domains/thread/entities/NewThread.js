@@ -7,8 +7,7 @@ class NewThread {
     this.owner = owner;
   }
 
-  _verifyPayload(payload) {
-    const { title, body, owner } = payload;
+  _verifyPayload({ title, body, owner }) {
     if (!title || !body || !owner) {
       throw new Error('NEW_THREAD.PROPERTY_NOT_FOUND');
     }
