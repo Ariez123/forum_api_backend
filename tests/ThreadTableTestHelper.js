@@ -73,14 +73,6 @@ const threadTableTestHelper = {
     return result.rows;
   },
 
-  async deleteReply(id) {
-    const query = {
-      text: 'UPDATE reply SET deleted = TRUE WHERE id=$1',
-      values: [id],
-    };
-    await pool.query(query);
-  },
-
   async cleanTable() {
     await pool.query(
       `DELETE FROM thread WHERE 1=1;
