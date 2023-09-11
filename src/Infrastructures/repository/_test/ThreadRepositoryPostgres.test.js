@@ -680,6 +680,57 @@ describe('ThreadRepositoryPostgres', () => {
     });
   });
 
+  describe('getReply Functions', () => {
+    it('should get reply from database', async () => {
+      const dataUser = {
+        id: 'user-1',
+        username: 'dicoding1',
+        password: 'secret_password',
+      };
+      const dataThread = {
+        id: 'thread-1',
+        title: 'Coba Thread',
+        body: 'Isi Thread',
+        owner: dataUser.id,
+        username: dataUser.username,
+        date: new Date('2023-09-09T03:14:51.495Z'),
+      };
+      const dataComment = {
+        id: 'comment-1',
+        threadId: dataThread.id,
+        owner: dataThread.owner,
+        content: 'Isi Komentar',
+        date: new Date('2023-09-09T03:14:51.495Z'),
+      };
+      const dataReply = {
+        id: 'reply-1',
+        commentId: dataComment.id,
+        content: 'Isi Balasan',
+        owner: dataComment.owner,
+        date: new Date('2023-09-09T03:14:51.495Z'),
+      };
+      await UserTableTestHelper.addUser(dataUser);
+      await ThreadTableTestHelper.addThread(dataThread);
+      await ThreadTableTestHelper.addComment(dataComment);
+      await ThreadTableTestHelper.addReply(dataReply);
+
+      const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
+
+      const getReply = await threadRepositoryPostgres.getReply(dataThread.id);
+      expect(getReply).toStrictEqual([
+        {
+          id: dataReply.id,
+          comment_id: dataReply.commentId,
+          content: dataReply.content,
+          date: dataReply.date,
+          deleted: false,
+          owner: dataReply.owner,
+          username: dataUser.username,
+        },
+      ]);
+    });
+  });
+
   describe('deleteReply function', () => {
     it('should delete reply from database', async () => {
       const dataUser = {
