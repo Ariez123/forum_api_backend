@@ -28,16 +28,16 @@ class ThreadRepository {
 
   // reply
   async addReply(newReply) {
-    throw new Error('REPLY_REPOSITORY.METHOD_NOT_IMPLEMENTED');
+    throw new Error('THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED');
   }
   async verifyReply(threadId, commentId, replyId) {
-    throw new Error('REPLY_REPOSITORY.METHOD_NOT_IMPLEMENTED');
+    throw new Error('THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED');
   }
   async verifyReplyOwner(replyId, owner) {
-    throw new Error('REPLY_REPOSITORY.METHOD_NOT_IMPLEMENTED');
+    throw new Error('THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED');
   }
   async deleteReply(replyId) {
-    throw new Error('REPLY_REPOSITORY.METHOD_NOT_IMPLEMENTED');
+    throw new Error('THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED');
   }
   async getReply(threadId) {
     throw new Error('THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED');
