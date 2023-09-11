@@ -63,13 +63,11 @@ describe('/threads endpoint', () => {
     });
 
     it('should response 400 when request payload not contain needed property', async () => {
-      // Arrange
       const dataPayload = {
         title: 'Coba Thread',
       };
 
       const server = await createServer(container);
-      // Add User
       await server.inject({
         method: 'POST',
         url: '/users',
@@ -80,7 +78,6 @@ describe('/threads endpoint', () => {
         },
       });
 
-      // Action
       const resAuth = await server.inject({
         method: 'POST',
         url: '/authentications',
@@ -108,14 +105,12 @@ describe('/threads endpoint', () => {
     });
 
     it('should response 400 when request payload not meet data type specification', async () => {
-      // Arrange
       const dataPayload = {
         title: 'Coba Thread',
         body: { data: `Isi Thread` },
       };
 
       const server = await createServer(container);
-      // Add User
       await server.inject({
         method: 'POST',
         url: '/users',
