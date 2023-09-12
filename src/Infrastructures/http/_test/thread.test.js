@@ -642,6 +642,7 @@ describe('/threads endpoint', () => {
 
       const resCommentJson = JSON.parse(resComment.payload);
       const { id: commentId, owner } = resCommentJson.data.addedComment;
+
       // data salah
       const wrongDataReply = {
         commentId,
