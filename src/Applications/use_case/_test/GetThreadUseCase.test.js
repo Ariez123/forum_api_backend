@@ -153,5 +153,9 @@ describe('GetThreadUseCase', () => {
       comments: dataCommentReply,
     });
     expect(mockThreadRepository.getThread).toBeCalledWith(dataPayload.threadId);
+    expect(mockThreadRepository.getCommentThread).toBeCalledWith(
+      dataPayload.threadId
+    );
+    expect(mockThreadRepository.getReply).toBeCalledWith(dataPayload.threadId);
   });
 });
