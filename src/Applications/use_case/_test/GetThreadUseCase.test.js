@@ -73,7 +73,12 @@ describe('GetThreadUseCase', () => {
       ...dataGetThread,
       comments: dataCommentReply,
     });
+
     expect(mockThreadRepository.getThread).toBeCalledWith(dataPayload.threadId);
+    expect(mockThreadRepository.getCommentThread).toBeCalledWith(
+      dataPayload.threadId
+    );
+    expect(mockThreadRepository.getReply).toBeCalledWith(dataPayload.threadId);
   });
 
   it('should get thread delete comment and reply', async () => {
