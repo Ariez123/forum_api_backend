@@ -6,6 +6,28 @@ const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
 const AuthenticationsTableTestHelper = require('../../../../tests/AuthenticationsTableTestHelper');
 
 describe('/threads endpoint', () => {
+  // data benar yang dibutuh kan untuk test
+  const dataUser = {
+    username: 'dicoding',
+    password: 'secret',
+    fullname: 'User Dicoding',
+  };
+  const dataThread = {
+    title: 'Coba Thread',
+    body: 'Isi Thread',
+  };
+  const dataComment = {
+    threadId: dataThread.id,
+    owner: dataThread.owner,
+    content: 'Isi Komentar',
+  };
+  const dataReply = {
+    commentId: dataComment.id,
+    content: 'Isi Balasan',
+    owner: dataComment.owner,
+  };
+  //
+
   afterEach(async () => {
     await UsersTableTestHelper.cleanTable();
     await AuthenticationsTableTestHelper.cleanTable();
@@ -22,35 +44,26 @@ describe('/threads endpoint', () => {
   // thread
   describe('POST /threads', () => {
     it('should response 201 and new thread', async () => {
-      const dataPayload = {
-        title: 'Coba Thread',
-        body: 'Isi Thread',
-      };
-
       const server = await createServer(container);
       await server.inject({
         method: 'POST',
         url: '/users',
-        payload: {
-          username: 'dicoding12',
-          password: 'secret',
-          fullname: 'Dicoding',
-        },
+        payload: dataUser,
       });
 
       const resAuth = await server.inject({
         method: 'POST',
         url: '/authentications',
         payload: {
-          username: 'dicoding12',
-          password: 'secret',
+          username: dataUser.username,
+          password: dataUser.password,
         },
       });
       const { accessToken } = JSON.parse(resAuth.payload).data;
       const resThread = await server.inject({
         method: 'POST',
         url: '/threads',
-        payload: dataPayload,
+        payload: dataThread,
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
@@ -63,7 +76,8 @@ describe('/threads endpoint', () => {
     });
 
     it('should response 400 when request payload not contain needed property', async () => {
-      const dataPayload = {
+      // data salah
+      const wrongDataThread = {
         title: 'Coba Thread',
       };
 
@@ -71,26 +85,22 @@ describe('/threads endpoint', () => {
       await server.inject({
         method: 'POST',
         url: '/users',
-        payload: {
-          username: 'dicoding2',
-          password: 'secret',
-          fullname: 'Dicoding',
-        },
+        payload: dataUser,
       });
 
       const resAuth = await server.inject({
         method: 'POST',
         url: '/authentications',
         payload: {
-          username: 'dicoding2',
-          password: 'secret',
+          username: dataUser.username,
+          password: dataUser.password,
         },
       });
       const { accessToken } = JSON.parse(resAuth.payload).data;
       const resThread = await server.inject({
         method: 'POST',
         url: '/threads',
-        payload: dataPayload,
+        payload: wrongDataThread,
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
@@ -105,7 +115,8 @@ describe('/threads endpoint', () => {
     });
 
     it('should response 400 when request payload not meet data type specification', async () => {
-      const dataPayload = {
+      // data salah
+      const wrongDataThread = {
         title: 'Coba Thread',
         body: { data: `Isi Thread` },
       };
@@ -114,26 +125,22 @@ describe('/threads endpoint', () => {
       await server.inject({
         method: 'POST',
         url: '/users',
-        payload: {
-          username: 'dicoding3',
-          password: 'secret',
-          fullname: 'Dicoding Indonesia',
-        },
+        payload: dataUser,
       });
 
       const resAuth = await server.inject({
         method: 'POST',
         url: '/authentications',
         payload: {
-          username: 'dicoding3',
-          password: 'secret',
+          username: dataUser.username,
+          password: dataUser.password,
         },
       });
       const { accessToken } = JSON.parse(resAuth.payload).data;
       const resThread = await server.inject({
         method: 'POST',
         url: '/threads',
-        payload: dataPayload,
+        payload: wrongDataThread,
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
@@ -150,26 +157,6 @@ describe('/threads endpoint', () => {
 
   describe('GET /threads', () => {
     it('should currenly', async () => {
-      const dataUser = {
-        username: 'dicoding',
-        password: 'secret',
-        fullname: 'User Dicoding',
-      };
-      const dataThread = {
-        title: 'Coba Thread',
-        body: 'Isi Thread',
-      };
-      const dataComment = {
-        threadId: dataThread.id,
-        owner: dataThread.owner,
-        content: 'Isi Komentar',
-      };
-      const dataReply = {
-        commentId: dataComment.id,
-        content: 'Isi Balasan',
-        owner: dataComment.owner,
-      };
-
       const server = await createServer(container);
       await server.inject({
         method: 'POST',
@@ -225,28 +212,25 @@ describe('/threads endpoint', () => {
       });
 
       const resGetThreadJson = JSON.parse(resGetThread.payload);
-
+      expect(resGetThread.statusCode).toEqual(200);
       expect(resGetThreadJson.status).toEqual('success');
+      expect(resGetThreadJson.message).toEqual('Berhasil ambil data thread!');
+    });
+    it('should not found', async () => {
+      const server = await createServer(container);
+      const resGetThread = await server.inject({
+        method: 'GET',
+        url: `/threads/xxx`,
+      });
+      const resGetThreadJson = JSON.parse(resGetThread.payload);
+      expect(resGetThread.statusCode).toEqual(404);
+      expect(resGetThreadJson.status).toEqual('fail');
+      expect(resGetThreadJson.message).toEqual('thread tidak ditemukan');
     });
   });
 
   describe('DELETE Comment', () => {
     it('should currenly', async () => {
-      const dataUser = {
-        username: 'dicoding',
-        password: 'secret',
-        fullname: 'User Dicoding',
-      };
-      const dataThread = {
-        title: 'Coba Thread',
-        body: 'Isi Thread',
-      };
-      const dataComment = {
-        threadId: dataThread.id,
-        owner: dataThread.owner,
-        content: 'Isi Komentar',
-      };
-
       const server = await createServer(container);
       await server.inject({
         method: 'POST',
@@ -297,32 +281,15 @@ describe('/threads endpoint', () => {
 
       const resDeleteCommentJson = JSON.parse(resDeleteComment.payload);
 
-      expect(resDeleteCommentJson.status).toEqual('success');
+      expect(resDeleteCommentJson).toStrictEqual({
+        status: 'success',
+        message: 'Berhasil hapus data comment!',
+      });
     });
   });
 
   describe('Delete Reply', () => {
     it('should currenly', async () => {
-      const dataUser = {
-        username: 'dicoding',
-        password: 'secret',
-        fullname: 'User Dicoding',
-      };
-      const dataThread = {
-        title: 'Coba Thread',
-        body: 'Isi Thread',
-      };
-      const dataComment = {
-        threadId: dataThread.id,
-        owner: dataThread.owner,
-        content: 'Isi Komentar',
-      };
-      const dataReply = {
-        commentId: dataComment.id,
-        content: 'Isi Balasan',
-        owner: dataComment.owner,
-      };
-
       const server = await createServer(container);
       await server.inject({
         method: 'POST',
@@ -384,8 +351,10 @@ describe('/threads endpoint', () => {
       });
 
       const resDeleteReplyJson = JSON.parse(resDeleteReply.payload);
-
-      expect(resDeleteReplyJson.status).toEqual('success');
+      expect(resDeleteReplyJson).toStrictEqual({
+        status: 'success',
+        message: 'Berhasil hapus balasan!',
+      });
     });
   });
 });

@@ -130,6 +130,7 @@ class ThreadHandler {
 
     return {
       status: 'success',
+      message: 'Berhasil hapus balasan!'
     };
   }
 }
