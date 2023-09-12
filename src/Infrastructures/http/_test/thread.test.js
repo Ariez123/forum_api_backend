@@ -216,7 +216,7 @@ describe('/threads endpoint', () => {
       expect(resGetThreadJson.status).toEqual('success');
       expect(resGetThreadJson.message).toEqual('Berhasil ambil data thread!');
     });
-    it('should not found', async () => {
+    it('should get threads not found', async () => {
       const server = await createServer(container);
       const resGetThread = await server.inject({
         method: 'GET',
@@ -226,6 +226,157 @@ describe('/threads endpoint', () => {
       expect(resGetThread.statusCode).toEqual(404);
       expect(resGetThreadJson.status).toEqual('fail');
       expect(resGetThreadJson.message).toEqual('thread tidak ditemukan');
+    });
+  });
+
+  describe('POST Comment', () => {
+    it('should currenly', async () => {
+      const server = await createServer(container);
+      await server.inject({
+        method: 'POST',
+        url: '/users',
+        payload: dataUser,
+      });
+
+      const resAuth = await server.inject({
+        method: 'POST',
+        url: '/authentications',
+        payload: {
+          username: dataUser.username,
+          password: dataUser.password,
+        },
+      });
+      const { accessToken } = JSON.parse(resAuth.payload).data;
+      const resThread = await server.inject({
+        method: 'POST',
+        url: '/threads',
+        payload: dataThread,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const resThreadJson = JSON.parse(resThread.payload);
+      const threadId = resThreadJson.data.addedThread.id;
+
+      const resComment = await server.inject({
+        method: 'POST',
+        url: `/threads/${threadId}/comments`,
+        payload: dataComment,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const resCommentJson = JSON.parse(resComment.payload);
+      expect(resComment.statusCode).toEqual(201);
+      expect(resCommentJson.status).toEqual('success');
+      expect(resCommentJson.data.addedComment).toBeDefined();
+    });
+    it('should wrong data comment, property not found', async () => {
+      const server = await createServer(container);
+      await server.inject({
+        method: 'POST',
+        url: '/users',
+        payload: dataUser,
+      });
+
+      const resAuth = await server.inject({
+        method: 'POST',
+        url: '/authentications',
+        payload: {
+          username: dataUser.username,
+          password: dataUser.password,
+        },
+      });
+      const { accessToken } = JSON.parse(resAuth.payload).data;
+      const resThread = await server.inject({
+        method: 'POST',
+        url: '/threads',
+        payload: dataThread,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const resThreadJson = JSON.parse(resThread.payload);
+      const { id: threadId, owner } = resThreadJson.data.addedThread;
+
+      // data salah
+      const wrongDataComment = {
+        threadId: threadId,
+        owner,
+      };
+
+      const resComment = await server.inject({
+        method: 'POST',
+        url: `/threads/${threadId}/comments`,
+        payload: wrongDataComment,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const resCommentJson = JSON.parse(resComment.payload);
+      expect(resComment.statusCode).toEqual(400);
+      expect(resCommentJson).toStrictEqual({
+        status: 'fail',
+        message:
+          'tidak dapat tambah komentar thread baru, properti tidak di temukan',
+      });
+    });
+    it('should wrong data comment, property not found', async () => {
+      const server = await createServer(container);
+      await server.inject({
+        method: 'POST',
+        url: '/users',
+        payload: dataUser,
+      });
+
+      const resAuth = await server.inject({
+        method: 'POST',
+        url: '/authentications',
+        payload: {
+          username: dataUser.username,
+          password: dataUser.password,
+        },
+      });
+      const { accessToken } = JSON.parse(resAuth.payload).data;
+      const resThread = await server.inject({
+        method: 'POST',
+        url: '/threads',
+        payload: dataThread,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const resThreadJson = JSON.parse(resThread.payload);
+      const { id: threadId, owner } = resThreadJson.data.addedThread;
+
+      // data salah
+      const wrongDataComment = {
+        threadId: threadId,
+        owner,
+        content: { data: 'Isi Komentar' },
+      };
+
+      const resComment = await server.inject({
+        method: 'POST',
+        url: `/threads/${threadId}/comments`,
+        payload: wrongDataComment,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const resCommentJson = JSON.parse(resComment.payload);
+      expect(resComment.statusCode).toEqual(400);
+      expect(resCommentJson).toStrictEqual({
+        status: 'fail',
+        message:
+          'tidak dapat tambah komentar thread baru, tipe data tidak sesuai',
+      });
     });
   });
 
@@ -284,6 +435,235 @@ describe('/threads endpoint', () => {
       expect(resDeleteCommentJson).toStrictEqual({
         status: 'success',
         message: 'Berhasil hapus data comment!',
+      });
+    });
+    it('should delete comment but comment not found', async () => {
+      const server = await createServer(container);
+      await server.inject({
+        method: 'POST',
+        url: '/users',
+        payload: dataUser,
+      });
+
+      const resAuth = await server.inject({
+        method: 'POST',
+        url: '/authentications',
+        payload: {
+          username: dataUser.username,
+          password: dataUser.password,
+        },
+      });
+      const { accessToken } = JSON.parse(resAuth.payload).data;
+      const resThread = await server.inject({
+        method: 'POST',
+        url: '/threads',
+        payload: dataThread,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const resThreadJson = JSON.parse(resThread.payload);
+      const threadId = resThreadJson.data.addedThread.id;
+
+      const resDeleteComment = await server.inject({
+        method: 'DELETE',
+        url: `/threads/${threadId}/comments/xxx`,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const resDeleteCommentJson = JSON.parse(resDeleteComment.payload);
+
+      expect(resDeleteCommentJson).toStrictEqual({
+        status: 'fail',
+        message: 'Komentar thread tidak di temukan!',
+      });
+    });
+  });
+
+  describe('POST Reply', () => {
+    it('should currenly', async () => {
+      const server = await createServer(container);
+      await server.inject({
+        method: 'POST',
+        url: '/users',
+        payload: dataUser,
+      });
+
+      const resAuth = await server.inject({
+        method: 'POST',
+        url: '/authentications',
+        payload: {
+          username: dataUser.username,
+          password: dataUser.password,
+        },
+      });
+      const { accessToken } = JSON.parse(resAuth.payload).data;
+      const resThread = await server.inject({
+        method: 'POST',
+        url: '/threads',
+        payload: dataThread,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const resThreadJson = JSON.parse(resThread.payload);
+      const threadId = resThreadJson.data.addedThread.id;
+
+      const resComment = await server.inject({
+        method: 'POST',
+        url: `/threads/${threadId}/comments`,
+        payload: dataComment,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const resCommentJson = JSON.parse(resComment.payload);
+      const commentId = resCommentJson.data.addedComment.id;
+
+      const resReply = await server.inject({
+        method: 'POST',
+        url: `/threads/${threadId}/comments/${commentId}/replies`,
+        payload: dataReply,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const resReplyJson = JSON.parse(resReply.payload);
+      expect(resReply.statusCode).toEqual(201);
+      expect(resReplyJson.status).toEqual('success');
+      expect(resReplyJson.data.addedReply).toBeDefined();
+    });
+    it('should data property not found', async () => {
+      const server = await createServer(container);
+      await server.inject({
+        method: 'POST',
+        url: '/users',
+        payload: dataUser,
+      });
+
+      const resAuth = await server.inject({
+        method: 'POST',
+        url: '/authentications',
+        payload: {
+          username: dataUser.username,
+          password: dataUser.password,
+        },
+      });
+      const { accessToken } = JSON.parse(resAuth.payload).data;
+      const resThread = await server.inject({
+        method: 'POST',
+        url: '/threads',
+        payload: dataThread,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const resThreadJson = JSON.parse(resThread.payload);
+      const threadId = resThreadJson.data.addedThread.id;
+
+      const resComment = await server.inject({
+        method: 'POST',
+        url: `/threads/${threadId}/comments`,
+        payload: dataComment,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const resCommentJson = JSON.parse(resComment.payload);
+      const { id: commentId, owner } = resCommentJson.data.addedComment;
+      // data salah
+      const wrongDataReply = {
+        commentId,
+        owner,
+      };
+
+      const resReply = await server.inject({
+        method: 'POST',
+        url: `/threads/${threadId}/comments/${commentId}/replies`,
+        payload: wrongDataReply,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const resReplyJson = JSON.parse(resReply.payload);
+      expect(resReply.statusCode).toEqual(400);
+      expect(resReplyJson).toStrictEqual({
+        status: 'fail',
+        message:
+          'tidak dapat tambah balasan komentar baru, properti tidak di temukan',
+      });
+    });
+    it('should data type wrong', async () => {
+      const server = await createServer(container);
+      await server.inject({
+        method: 'POST',
+        url: '/users',
+        payload: dataUser,
+      });
+
+      const resAuth = await server.inject({
+        method: 'POST',
+        url: '/authentications',
+        payload: {
+          username: dataUser.username,
+          password: dataUser.password,
+        },
+      });
+      const { accessToken } = JSON.parse(resAuth.payload).data;
+      const resThread = await server.inject({
+        method: 'POST',
+        url: '/threads',
+        payload: dataThread,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const resThreadJson = JSON.parse(resThread.payload);
+      const threadId = resThreadJson.data.addedThread.id;
+
+      const resComment = await server.inject({
+        method: 'POST',
+        url: `/threads/${threadId}/comments`,
+        payload: dataComment,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const resCommentJson = JSON.parse(resComment.payload);
+      const { id: commentId, owner } = resCommentJson.data.addedComment;
+      // data salah
+      const wrongDataReply = {
+        commentId,
+        owner,
+        content: { data: 'Isi Balasan' },
+      };
+
+      const resReply = await server.inject({
+        method: 'POST',
+        url: `/threads/${threadId}/comments/${commentId}/replies`,
+        payload: wrongDataReply,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const resReplyJson = JSON.parse(resReply.payload);
+      expect(resReply.statusCode).toEqual(400);
+      expect(resReplyJson).toStrictEqual({
+        status: 'fail',
+        message:
+          'tidak dapat tambah balasan komentar baru, tipe data tidak sesuai',
       });
     });
   });
@@ -354,6 +734,61 @@ describe('/threads endpoint', () => {
       expect(resDeleteReplyJson).toStrictEqual({
         status: 'success',
         message: 'Berhasil hapus balasan!',
+      });
+    });
+    it('should wrong reply not found', async () => {
+      const server = await createServer(container);
+      await server.inject({
+        method: 'POST',
+        url: '/users',
+        payload: dataUser,
+      });
+
+      const resAuth = await server.inject({
+        method: 'POST',
+        url: '/authentications',
+        payload: {
+          username: dataUser.username,
+          password: dataUser.password,
+        },
+      });
+      const { accessToken } = JSON.parse(resAuth.payload).data;
+      const resThread = await server.inject({
+        method: 'POST',
+        url: '/threads',
+        payload: dataThread,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const resThreadJson = JSON.parse(resThread.payload);
+      const threadId = resThreadJson.data.addedThread.id;
+
+      const resComment = await server.inject({
+        method: 'POST',
+        url: `/threads/${threadId}/comments`,
+        payload: dataComment,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const resCommentJson = JSON.parse(resComment.payload);
+      const commentId = resCommentJson.data.addedComment.id;
+
+      const resDeleteReply = await server.inject({
+        method: 'DELETE',
+        url: `/threads/${threadId}/comments/${commentId}/replies/xxx`,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const resDeleteReplyJson = JSON.parse(resDeleteReply.payload);
+      expect(resDeleteReplyJson).toStrictEqual({
+        status: 'fail',
+        message: 'Balasan komentar tidak di temukan!',
       });
     });
   });
