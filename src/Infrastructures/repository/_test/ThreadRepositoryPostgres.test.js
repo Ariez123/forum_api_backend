@@ -372,6 +372,7 @@ describe('ThreadRepositoryPostgres', () => {
         })
       );
 
+      expect(getComment).toHaveLength(2);
       expect(mapDataComment).toEqual([
         { ...firstComment, username: dataUser.username },
         { ...secondComment, username: dataUser.username },
