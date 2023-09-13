@@ -30,7 +30,7 @@ describe('AddReplyUseCase', () => {
 
     mockThreadRepository.addReply = jest
       .fn()
-      .mockImplementation(() => Promise.resolve(new AddReply(dataReply)));
+      .mockImplementation(() => Promise.resolve(dataReply));
 
     const addReplyUseCase = new AddReplyUseCase({
       threadRepository: mockThreadRepository,

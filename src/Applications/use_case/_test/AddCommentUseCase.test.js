@@ -27,12 +27,11 @@ describe('AddCommentUseCase', () => {
 
     mockThreadRepository.addComment = jest
       .fn()
-      .mockImplementation(() => Promise.resolve(new AddComment(dataComment)));
+      .mockImplementation(() => Promise.resolve(dataComment));
 
     const addCommentUseCase = new AddCommentUseCase({
       threadRepository: mockThreadRepository,
     });
-
     const addComment = await addCommentUseCase.execute(dataPayload);
 
     expect(addComment).toStrictEqual(dataComment);
