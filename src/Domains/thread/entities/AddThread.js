@@ -1,3 +1,5 @@
+const Joi = require('joi');
+
 class AddThread {
   constructor(payload) {
     this._verifyPayload(payload);
@@ -8,15 +10,21 @@ class AddThread {
   }
 
   _verifyPayload({ id, title, owner }) {
-    if (!id || !title || !owner) {
-      throw new Error('ADD_THREAD.PROPERTY_NOT_FOUND');
-    }
-    if (
-      typeof id !== 'string' ||
-      typeof title !== 'string' ||
-      typeof owner !== 'string'
-    ) {
-      throw new Error('ADD_THREAD.INCCORECT_TYPE_DATA');
+    const dataMessage = {
+      'string.base': `ADD_THREAD.INCCORECT_TYPE_DATA`,
+      'string.empty': `ADD_THREAD.PROPERTY_NOT_FOUND`,
+      'any.required': `ADD_THREAD.PROPERTY_NOT_FOUND`,
+    };
+    const schema = Joi.object({
+      id: Joi.string().required().messages(dataMessage),
+      title: Joi.string().required().messages(dataMessage),
+      owner: Joi.string().required().messages(dataMessage),
+    });
+    // run validator
+    const validationResult = schema.validate({ id, title, owner });
+
+    if (validationResult.error) {
+      throw new Error(validationResult.error.message);
     }
   }
 }

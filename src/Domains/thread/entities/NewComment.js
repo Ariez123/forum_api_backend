@@ -1,3 +1,5 @@
+const Joi = require('joi');
+
 class NewComment {
   constructor(payload) {
     this._verifyPayload(payload);
@@ -7,15 +9,21 @@ class NewComment {
     this.owner = owner;
   }
   _verifyPayload({ content, threadId, owner }) {
-    if (!content || !threadId || !owner) {
-      throw new Error('NEW_COMMENT.PROPERTY_NOT_FOUND');
-    }
-    if (
-      typeof content !== 'string' ||
-      typeof threadId !== 'string' ||
-      typeof owner !== 'string'
-    ) {
-      throw new Error('NEW_COMMENT.INCCORECT_TYPE_DATA');
+    const dataMessage = {
+      'string.base': `NEW_COMMENT.INCCORECT_TYPE_DATA`,
+      'string.empty': `NEW_COMMENT.PROPERTY_NOT_FOUND`,
+      'any.required': `NEW_COMMENT.PROPERTY_NOT_FOUND`,
+    };
+    const schema = Joi.object({
+      threadId: Joi.string().required().messages(dataMessage),
+      content: Joi.string().required().messages(dataMessage),
+      owner: Joi.string().required().messages(dataMessage),
+    });
+    // run validator
+    const validationResult = schema.validate({ content, threadId, owner });
+
+    if (validationResult.error) {
+      throw new Error(validationResult.error.message);
     }
   }
 }

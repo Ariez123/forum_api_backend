@@ -8,7 +8,7 @@ class AddComment {
     this.content = content;
     this.owner = owner;
   }
-  _verifyPayload(dataPayload) {
+  _verifyPayload({ id, content, owner }) {
     const dataMessage = {
       'string.base': `ADD_COMMENT.INCCORECT_TYPE_DATA`,
       'string.empty': `ADD_COMMENT.PROPERTY_NOT_FOUND`,
@@ -20,7 +20,7 @@ class AddComment {
       owner: Joi.string().required().messages(dataMessage),
     });
     // run validator
-    const validationResult = schema.validate(dataPayload);
+    const validationResult = schema.validate({ id, content, owner });
 
     if (validationResult.error) {
       throw new Error(validationResult.error.message);
