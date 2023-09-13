@@ -4,16 +4,12 @@ const AddCommentUseCase = require('../../../../Applications/use_case/AddCommentU
 const DeleteCommentUseCase = require('../../../../Applications/use_case/DeleteCommentUseCase');
 const AddReplyUseCase = require('../../../../Applications/use_case/AddReplyUseCase');
 const DeleteReplyUseCase = require('../../../../Applications/use_case/DeleteReplyUseCase');
+const autoBind = require('auto-bind');
 
 class ThreadHandler {
   constructor(container) {
     this._container = container;
-    this.getThreadHandler = this.getThreadHandler.bind(this);
-    this.postThreadHandler = this.postThreadHandler.bind(this);
-    this.postCommentHandler = this.postCommentHandler.bind(this);
-    this.deleteCommentHandler = this.deleteCommentHandler.bind(this);
-    this.postReplyHandler = this.postReplyHandler.bind(this);
-    this.deleteReplyHandler = this.deleteReplyHandler.bind(this);
+    autoBind(this);
   }
 
   async getThreadHandler(req) {
@@ -130,7 +126,7 @@ class ThreadHandler {
 
     return {
       status: 'success',
-      message: 'Berhasil hapus balasan!'
+      message: 'Berhasil hapus balasan!',
     };
   }
 }
