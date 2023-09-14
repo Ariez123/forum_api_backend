@@ -8,7 +8,7 @@ class NewComment {
     this.threadId = threadId;
     this.owner = owner;
   }
-  _verifyPayload({ content, threadId, owner }) {
+  _verifyPayload(dataPayload) {
     const dataMessage = {
       'string.base': `NEW_COMMENT.INCCORECT_TYPE_DATA`,
       'string.empty': `NEW_COMMENT.PROPERTY_NOT_FOUND`,
@@ -18,9 +18,9 @@ class NewComment {
       threadId: Joi.string().required().messages(dataMessage),
       content: Joi.string().required().messages(dataMessage),
       owner: Joi.string().required().messages(dataMessage),
-    });
+    }).unknown(true);
     // run validator
-    const validationResult = schema.validate({ content, threadId, owner });
+    const validationResult = schema.validate(dataPayload);
 
     if (validationResult.error) {
       throw new Error(validationResult.error.message);

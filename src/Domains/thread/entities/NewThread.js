@@ -9,7 +9,7 @@ class NewThread {
     this.owner = owner;
   }
 
-  _verifyPayload({ title, body, owner }) {
+  _verifyPayload(dataPayload) {
     const dataMessage = {
       'string.base': `NEW_THREAD.INCCORECT_TYPE_DATA`,
       'string.empty': `NEW_THREAD.PROPERTY_NOT_FOUND`,
@@ -19,9 +19,9 @@ class NewThread {
       title: Joi.string().required().messages(dataMessage),
       body: Joi.string().required().messages(dataMessage),
       owner: Joi.string().required().messages(dataMessage),
-    });
+    }).unknown(true);
     // run validator
-    const validationResult = schema.validate({ title, body, owner });
+    const validationResult = schema.validate(dataPayload);
 
     if (validationResult.error) {
       throw new Error(validationResult.error.message);
