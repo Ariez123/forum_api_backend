@@ -15,7 +15,7 @@ describe('AddCommentUseCase', () => {
       id: 'comment-1',
       content: dataPayload.content,
       threadId: dataPayload.threadId,
-      date: '2023-09-09T03:14:51.495Z',
+      date: '2023',
       owner: dataPayload.owner,
     });
 
@@ -25,13 +25,21 @@ describe('AddCommentUseCase', () => {
       .fn()
       .mockImplementation(() => Promise.resolve());
 
-    mockThreadRepository.addComment = jest
-      .fn()
-      .mockImplementation(() => Promise.resolve(dataComment));
+    mockThreadRepository.addComment = jest.fn().mockImplementation(() =>
+      Promise.resolve(
+        new AddComment({
+          id: dataComment.id,
+          content: dataComment.content,
+          owner: dataComment.owner,
+          date: '2023-09-09T03:14:51.495Z',
+        })
+      )
+    );
 
     const addCommentUseCase = new AddCommentUseCase({
       threadRepository: mockThreadRepository,
     });
+
     const addComment = await addCommentUseCase.execute(dataPayload);
 
     expect(addComment).toStrictEqual(dataComment);

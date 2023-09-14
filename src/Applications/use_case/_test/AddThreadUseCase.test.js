@@ -15,15 +15,22 @@ describe('AddThreadUseCase', () => {
       id: 'thread-1',
       title: dataPayload.title,
       body: dataPayload.body,
-      date: '2023-09-09T03:14:51.495Z',
+      date: '2023',
       owner: dataPayload.owner,
     });
 
     const mockThreadRepository = new ThreadRepository();
 
-    mockThreadRepository.addThread = jest
-      .fn()
-      .mockImplementation(() => Promise.resolve(dataAddThread));
+    mockThreadRepository.addThread = jest.fn().mockImplementation(() =>
+      Promise.resolve(
+        new AddThread({
+          id: dataAddThread.id,
+          title: dataAddThread.title,
+          date: '2023-09-09T03:14:51.495Z',
+          owner: dataAddThread.owner,
+        })
+      )
+    );
 
     const addThreadUseCase = new AddThreadUseCase({
       threadRepository: mockThreadRepository,

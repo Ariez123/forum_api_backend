@@ -16,6 +16,7 @@ describe('AddReplyUseCase', () => {
       id: 'reply-1',
       content: dataPayload.content,
       owner: dataPayload.owner,
+      date: '2023',
     });
 
     const mockThreadRepository = new ThreadRepository();
@@ -28,9 +29,16 @@ describe('AddReplyUseCase', () => {
       .fn()
       .mockImplementation(() => Promise.resolve());
 
-    mockThreadRepository.addReply = jest
-      .fn()
-      .mockImplementation(() => Promise.resolve(dataReply));
+    mockThreadRepository.addReply = jest.fn().mockImplementation(() =>
+      Promise.resolve(
+        new AddReply({
+          id: dataReply.id,
+          content: dataReply.content,
+          owner: dataReply.owner,
+          date: '2023-09-09T03:14:51.495Z',
+        })
+      )
+    );
 
     const addReplyUseCase = new AddReplyUseCase({
       threadRepository: mockThreadRepository,
