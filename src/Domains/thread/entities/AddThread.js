@@ -9,7 +9,7 @@ class AddThread {
     this.owner = owner;
   }
 
-  _verifyPayload({ id, title, owner }) {
+  _verifyPayload(dataPayload) {
     const dataMessage = {
       'string.base': `ADD_THREAD.INCCORECT_TYPE_DATA`,
       'string.empty': `ADD_THREAD.PROPERTY_NOT_FOUND`,
@@ -19,9 +19,9 @@ class AddThread {
       id: Joi.string().required().messages(dataMessage),
       title: Joi.string().required().messages(dataMessage),
       owner: Joi.string().required().messages(dataMessage),
-    });
+    }).unknown(true);
     // run validator
-    const validationResult = schema.validate({ id, title, owner });
+    const validationResult = schema.validate(dataPayload);
 
     if (validationResult.error) {
       throw new Error(validationResult.error.message);

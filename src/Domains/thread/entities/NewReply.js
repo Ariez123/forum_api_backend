@@ -9,7 +9,7 @@ class NewReply {
     this.owner = owner;
   }
 
-  _verifyPayload({ commentId, content, owner }) {
+  _verifyPayload(dataPayload) {
     const dataMessage = {
       'string.base': `NEW_REPLY.INCCORECT_TYPE_DATA`,
       'string.empty': `NEW_REPLY.PROPERTY_NOT_FOUND`,
@@ -19,9 +19,9 @@ class NewReply {
       commentId: Joi.string().required().messages(dataMessage),
       content: Joi.string().required().messages(dataMessage),
       owner: Joi.string().required().messages(dataMessage),
-    });
+    }).unknown(true);
     // run validator
-    const validationResult = schema.validate({ commentId, content, owner });
+    const validationResult = schema.validate(dataPayload);
 
     if (validationResult.error) {
       throw new Error(validationResult.error.message);
