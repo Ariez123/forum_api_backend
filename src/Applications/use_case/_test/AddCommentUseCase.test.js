@@ -28,9 +28,9 @@ describe('AddCommentUseCase', () => {
     mockThreadRepository.addComment = jest.fn().mockImplementation(() =>
       Promise.resolve(
         new AddComment({
-          id: dataComment.id,
-          content: dataComment.content,
-          owner: dataComment.owner,
+          id: 'comment-1',
+          content: dataPayload.content,
+          owner: dataPayload.owner,
           date: '2023-09-09T03:14:51.495Z',
         })
       )
