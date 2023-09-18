@@ -21,5 +21,4 @@ jobs:
             git pull origin main
             npm install
             npm run migrate up
-            cd
             pm2 restart forum-api
