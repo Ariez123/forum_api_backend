@@ -1,4 +1,4 @@
-name: Continuous Deployment
+name: Node.js CD
  
 on: 
   push:
