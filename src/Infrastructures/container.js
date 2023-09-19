@@ -17,6 +17,8 @@ const BcryptPasswordHash = require('./security/BcryptPasswordHash');
 // tambahan repo
 const ThreadRepository = require('../Domains/thread/ThreadRepository');
 const ThreadRepositoryPostgres = require('./repository/ThreadRepositoryPostgres');
+const LikeRepository = require('../Domains/likes/LikeRepository');
+const LikeUnlikeCommentRepositoryPostgres = require('./repository/LikeUnlikeCommetRepositoryPostgres');
 
 // use case
 const AddUserUseCase = require('../Applications/use_case/AddUserUseCase');
@@ -35,6 +37,7 @@ const AddCommentUseCase = require('../Applications/use_case/AddCommentUseCase');
 const DeleteCommentUseCase = require('../Applications/use_case/DeleteCommentUseCase');
 const AddReplyUseCase = require('../Applications/use_case/AddReplyUseCase');
 const DeleteReplyUseCase = require('../Applications/use_case/DeleteReplyUseCase');
+const LikeUnlikeCommentUseCase = require('../Applications/use_case/LikeUnlikeCommentUseCase');
 
 // creating container
 const container = createContainer();
@@ -91,6 +94,20 @@ container.register([
   {
     key: ThreadRepository.name,
     Class: ThreadRepositoryPostgres,
+    parameter: {
+      dependencies: [
+        {
+          concrete: pool,
+        },
+        {
+          concrete: nanoid,
+        },
+      ],
+    },
+  },
+  {
+    key: LikeRepository.name,
+    Class: LikeUnlikeCommentRepositoryPostgres,
     parameter: {
       dependencies: [
         {
@@ -188,6 +205,10 @@ container.register([
           name: 'threadRepository',
           internal: ThreadRepository.name,
         },
+        {
+          name: 'likeRepository',
+          internal: LikeRepository.name,
+        },
       ],
     },
   },
@@ -252,6 +273,23 @@ container.register([
         {
           name: 'threadRepository',
           internal: ThreadRepository.name,
+        },
+      ],
+    },
+  },
+  {
+    key: LikeUnlikeCommentUseCase.name,
+    Class: LikeUnlikeCommentUseCase,
+    parameter: {
+      injectType: 'destructuring',
+      dependencies: [
+        {
+          name: 'threadRepository',
+          internal: ThreadRepository.name,
+        },
+        {
+          name: 'likeRepository',
+          internal: LikeRepository.name,
         },
       ],
     },
