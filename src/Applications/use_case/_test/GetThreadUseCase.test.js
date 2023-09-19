@@ -1,5 +1,6 @@
 const GetThreadUseCase = require('../GetThreadUseCase');
 const ThreadRepository = require('../../../Domains/thread/ThreadRepository');
+const LikeRepository = require('../../../Domains/likes/LikeRepository');
 
 describe('GetThreadUseCase', () => {
   it('should get thread correctly', async () => {
@@ -35,21 +36,33 @@ describe('GetThreadUseCase', () => {
       },
     ];
 
+    const dataLikes = [
+      {
+        comment_id: 'comment-1',
+      },
+      {
+        comment_id: 'comment-1',
+      },
+    ];
+
     const mapDataComment = dataComment.map(
       ({ deleted: deletedComment, ...otherProperti }) => otherProperti
     );
     const mapDataReply = dataReply.map(
       ({ comment_id, deleted, ...otherProperti }) => otherProperti
     );
+    const mapDataLikes = dataLikes.map(({ comment_id }) => comment_id);
 
     const dataCommentReply = [
       {
         ...mapDataComment[0],
+        likeCount: mapDataLikes.length,
         replies: mapDataReply,
       },
     ];
 
     const mockThreadRepository = new ThreadRepository();
+    const mockLikeRepository = new LikeRepository();
 
     mockThreadRepository.getThread = jest
       .fn()
@@ -62,9 +75,20 @@ describe('GetThreadUseCase', () => {
     mockThreadRepository.getReply = jest
       .fn()
       .mockImplementation(() => Promise.resolve(dataReply));
+    mockLikeRepository.getLikeCountComment = jest.fn().mockImplementation(() =>
+      Promise.resolve([
+        {
+          comment_id: 'comment-1',
+        },
+        {
+          comment_id: 'comment-1',
+        },
+      ])
+    );
 
     const mockGetThreadUseCase = new GetThreadUseCase({
       threadRepository: mockThreadRepository,
+      likeRepository: mockLikeRepository,
     });
 
     const theThread = await mockGetThreadUseCase.execute(dataPayload.threadId);
@@ -79,6 +103,9 @@ describe('GetThreadUseCase', () => {
       dataPayload.threadId
     );
     expect(mockThreadRepository.getReply).toBeCalledWith(dataPayload.threadId);
+    expect(mockLikeRepository.getLikeCountComment).toBeCalledWith(
+      dataPayload.threadId
+    );
   });
 
   it('should get thread delete comment and reply', async () => {
@@ -113,6 +140,14 @@ describe('GetThreadUseCase', () => {
         deleted: true,
       },
     ];
+    const dataLikes = [
+      {
+        comment_id: 'comment-1',
+      },
+      {
+        comment_id: 'comment-1',
+      },
+    ];
 
     const mapDataComment = dataComment.map(
       ({ deleted: deletedComment, ...otherProperti }) => otherProperti
@@ -120,15 +155,18 @@ describe('GetThreadUseCase', () => {
     const mapDataReply = dataReply.map(
       ({ comment_id, deleted, ...otherProperti }) => otherProperti
     );
+    const mapDataLikes = dataLikes.map(({ comment_id }) => comment_id);
 
     const dataCommentReply = [
       {
         ...mapDataComment[0],
+        likeCount: mapDataLikes.length,
         replies: mapDataReply,
       },
     ];
 
     const mockThreadRepository = new ThreadRepository();
+    const mockLikeRepository = new LikeRepository();
 
     mockThreadRepository.getThread = jest
       .fn()
@@ -142,8 +180,20 @@ describe('GetThreadUseCase', () => {
       .fn()
       .mockImplementation(() => Promise.resolve(dataReply));
 
+    mockLikeRepository.getLikeCountComment = jest.fn().mockImplementation(() =>
+      Promise.resolve([
+        {
+          comment_id: 'comment-1',
+        },
+        {
+          comment_id: 'comment-1',
+        },
+      ])
+    );
+
     const mockGetThreadUseCase = new GetThreadUseCase({
       threadRepository: mockThreadRepository,
+      likeRepository: mockLikeRepository,
     });
 
     const theThread = await mockGetThreadUseCase.execute(dataPayload.threadId);
@@ -157,5 +207,8 @@ describe('GetThreadUseCase', () => {
       dataPayload.threadId
     );
     expect(mockThreadRepository.getReply).toBeCalledWith(dataPayload.threadId);
+    expect(mockLikeRepository.getLikeCountComment).toBeCalledWith(
+      dataPayload.threadId
+    );
   });
 });
