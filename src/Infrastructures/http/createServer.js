@@ -5,8 +5,8 @@ const users = require('../../Interfaces/http/api/users');
 const authentications = require('../../Interfaces/http/api/authentications');
 const Jwt = require('@hapi/jwt');
 
-const thread = require('../../Interfaces/http/api/thread');
 const likes = require('../../Interfaces/http/api/likes');
+const thread = require('../../Interfaces/http/api/thread');
 
 const createServer = async (container) => {
   const server = Hapi.server({
@@ -52,7 +52,6 @@ const createServer = async (container) => {
       plugin: authentications,
       options: { container },
     },
-    // tambahan register
     {
       plugin: thread,
       options: { container },

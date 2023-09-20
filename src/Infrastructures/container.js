@@ -17,6 +17,7 @@ const BcryptPasswordHash = require('./security/BcryptPasswordHash');
 // tambahan repo
 const ThreadRepository = require('../Domains/thread/ThreadRepository');
 const ThreadRepositoryPostgres = require('./repository/ThreadRepositoryPostgres');
+
 const LikeRepository = require('../Domains/likes/LikeRepository');
 const LikeUnlikeCommentRepositoryPostgres = require('./repository/LikeUnlikeCommetRepositoryPostgres');
 
